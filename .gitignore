@@ -8,5 +8,7 @@ cache/*
 config/*
 robots.txt
 
+.idea/
+
 #For Toby's own repo (should really clean these up on my comp):
 uploads/*
