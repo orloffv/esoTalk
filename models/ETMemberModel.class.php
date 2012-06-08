@@ -223,8 +223,8 @@ public function expand(&$member)
  */
 public function hashPassword($password)
 {
-	require_once PATH_LIBRARY."/vendor/phpass/PasswordHash.php";
-	$hasher = new PasswordHash(8, FALSE);
+	require_once PATH_LIBRARY."/vendor/symfony/PasswordHash.php";
+	$hasher = new PasswordHash();
 	return $hasher->HashPassword($password);
 }
 
@@ -238,8 +238,8 @@ public function hashPassword($password)
  */
 public function checkPassword($password, $hash)
 {
-	require_once PATH_LIBRARY."/vendor/phpass/PasswordHash.php";
-	$hasher = new PasswordHash(8, FALSE);
+	require_once PATH_LIBRARY."/vendor/symfony/PasswordHash.php";
+	$hasher = new PasswordHash();
 	return $hasher->CheckPassword($password, $hash);
 }
 
