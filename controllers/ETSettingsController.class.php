@@ -192,6 +192,18 @@ public function fieldLanguage($form)
 {
 	$options = array();
 	foreach (ET::getLanguages() as $language) $options[$language] = ET::$languageInfo[$language]["name"];
+
+    // sort. Default language set first.
+    uksort($options, function($a, $b) {
+        if ($a == C("esoTalk.language")) {
+            return -1;
+        } elseif ($b == C("esoTalk.language")) {
+            return 1;
+        } else {
+            return 0;
+        }
+    });
+
 	return $form->select("language", $options);
 }
 
