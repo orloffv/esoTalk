@@ -192,10 +192,54 @@ init: function() {
 // Initialize the edit channel sheet.
 initEditChannel: function() {
 
-	// Update the channel slug preview when the title input is typed in.
-	$("#editChannelSheet input[name=title]").keyup(function() {
-		$("#channelSlug").val($(this).val().replace(/[^0-9a-z]/ig, "-").replace(/-+/, "-").replace(/^-+|-+$/g, "").toLowerCase());
-	});
+    var generate = function(type, str)
+    {
+        if (type == 'slug')
+        {
+            str = str.replace(/[\s]+/gi, '-').replace(/-+/, "-").replace(/^-+|-+$/g, "");
+            str = translit(str);
+            str = str.replace(/[^0-9a-z-]+/gi, '').toLowerCase();
+        }
+
+        return str;
+    }
+
+    var translit = function(str)
+    {
+        var ru=("А-а-Б-б-В-в-Ґ-ґ-Г-г-Д-д-Е-е-Ё-ё-Є-є-Ж-ж-З-з-И-и-І-і-Ї-ї-Й-й-К-к-Л-л-М-м-Н-н-О-о-П-п-Р-р-С-с-Т-т-У-у-Ф-ф-Х-х-Ц-ц-Ч-ч-Ш-ш-Щ-щ-Ъ-ъ-Ы-ы-Ь-ь-Э-э-Ю-ю-Я-я").split("-")
+        var en=("A-a-B-b-V-v-G-g-G-g-D-d-E-e-E-e-E-e-ZH-zh-Z-z-I-i-I-i-I-i-J-j-K-k-L-l-M-m-N-n-O-o-P-p-R-r-S-s-T-t-U-u-F-f-H-h-TS-ts-CH-ch-SH-sh-SCH-sch-'-'-Y-y-'-'-E-e-YU-yu-YA-ya").split("-")
+        var res = '';
+        for(var i=0, l=str.length; i<l; i++)
+        {
+            var s = str.charAt(i), n = ru.indexOf(s);
+            if(n >= 0) { res += en[n]; }
+            else { res += s; }
+        }
+        return res;
+    }
+
+    var $input_parent = $("#editChannelSheet input[name=title]");
+    var $input_item = $("#channelSlug");
+    var type='slug';
+
+    var update_item = $input_item.val() ==  generate(type, $input_parent.val()) || $input_item.val() == '';
+
+    $input_item.change(function()
+    {
+        update_item = $input_item.val() ==  generate(type, $input_parent.val()) || $input_item.val() == '';
+    });
+
+    $input_parent.keyup(function()
+    {
+        if ($input_parent.length && $input_item.length)
+        {
+            var str = generate(type, $input_parent.val());
+
+            if (update_item) {
+                $input_item.val(str).trigger('focusout');
+            }
+        }
+    });
 
 	// Allow the user to select a channel to import permissions from.
 	$("select[name=copyPermissions]").change(function(e) {
