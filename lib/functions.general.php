@@ -363,6 +363,10 @@ function slug($string)
 	// Convert special latin letters and other characters to HTML entities.
 	$slug = htmlentities($string, ENT_NOQUOTES, "UTF-8");
 
+    if (preg_match('/[^A-Za-z0-9_\-]/', $slug)) {
+        $slug = translitIt($slug);
+    }
+
 	// With those HTML entities, either convert them back to a normal letter, or remove them.
 	$slug = preg_replace(array("/&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);/i", "/&[^;]{2,6};/"), array("$1", " "), $slug);
 
@@ -370,6 +374,26 @@ function slug($string)
 	$slug = strtolower(trim(preg_replace(array("/[^0-9a-z]/i", "/-+/"), "-", $slug), "-"));
 
 	return substr($slug, 0, 63);
+}
+
+function translitIt($str)
+{
+    $tr = array(
+        "А"=>"A","Б"=>"B","В"=>"V","Г"=>"G",
+        "Д"=>"D","Е"=>"E","Ж"=>"J","З"=>"Z","И"=>"I",
+        "Й"=>"Y","К"=>"K","Л"=>"L","М"=>"M","Н"=>"N",
+        "О"=>"O","П"=>"P","Р"=>"R","С"=>"S","Т"=>"T",
+        "У"=>"U","Ф"=>"F","Х"=>"H","Ц"=>"TS","Ч"=>"CH",
+        "Ш"=>"SH","Щ"=>"SCH","Ъ"=>"","Ы"=>"Y","Ь"=>"",
+        "Э"=>"E","Ю"=>"YU","Я"=>"YA","а"=>"a","б"=>"b",
+        "в"=>"v","г"=>"g","д"=>"d","е"=>"e","ж"=>"j",
+        "з"=>"z","и"=>"i","й"=>"y","к"=>"k","л"=>"l",
+        "м"=>"m","н"=>"n","о"=>"o","п"=>"p","р"=>"r",
+        "с"=>"s","т"=>"t","у"=>"u","ф"=>"f","х"=>"h",
+        "ц"=>"ts","ч"=>"ch","ш"=>"sh","щ"=>"sch","ъ"=>"y",
+        "ы"=>"y","ь"=>"","э"=>"e","ю"=>"yu","я"=>"ya"
+    );
+    return strtr($str,$tr);
 }
 
 
@@ -615,7 +639,7 @@ function json_decode($json)
 function URL($url = "", $absolute = false)
 {
 	if (strpos($url, "http://") === 0) return $url;
-	
+
 	// Strip off the hash.
 	$hash = strstr($url, "#");
 	if ($hash) $url = substr($url, 0, -strlen($hash));
@@ -985,14 +1009,14 @@ function addToArrayString(&$array, $key, $value, $position = false)
 
 
 if (function_exists("lcfirst") === false) {
- 
+
 /**
  * Make a string's first character lowercase.
- * 
+ *
  * NOTE: Is included in PHP 5 >= 5.3.0
- * 
+ *
  * @param string $str The input string.
- * @return string 
+ * @return string
  */
 function lcfirst($str)
 {
